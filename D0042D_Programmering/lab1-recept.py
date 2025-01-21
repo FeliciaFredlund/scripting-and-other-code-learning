@@ -14,9 +14,9 @@ import sys
 
 
 def sockerkaka(antal):  
-    antal = float(antal)
+    print(f"\n*** Sockerkaka för {antal} ***\n")
 
-    print(f"\n*** Sockerkaka för {antal:g} ***\n")
+    antal = float(antal)
 
     print("Till formen:")
     print(f"ca {(15/4 * antal):g} g smör")
@@ -38,11 +38,7 @@ def main():
         print("ERROR: Ingen parameter angiven. (Antalet personer)")
         return
 
-    number_of_people = sys.argv[1]
-
-    if (isinstance(number_of_people, int)):
-        print("ERROR: Antalet personer behöver vara ett nummer.")
-        return
+    number_of_people = int(sys.argv[1])
     
     sockerkaka(number_of_people)
 
