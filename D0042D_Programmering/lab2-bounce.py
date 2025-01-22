@@ -1,9 +1,9 @@
 '''
 Script for given an integer, print all numbers from there to zero and then back up to that number with recursion
 Author: Felicia Fredlund
-Last updated: 2025-01-XX
+Last updated: 2025-01-22
 
-Still to do: n/a
+Still to do: could figure out a way to not have to call print() after calling bounce()
 
 How to run:
 python(3) lab2-bounce.py NUMBER_OF_BOUNCES
