@@ -1,9 +1,7 @@
 '''
 Script for prints the contents of the given file
 Author: Felicia Fredlund
-Last updated: 2025-01-XX
-
-Still to do: n/a
+Last updated: 2025-01-22
 
 How to run:
 python(3) lab2-getfilecontent.py FILENAME
