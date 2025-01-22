@@ -7,8 +7,8 @@ How to run:
 python(3) lab2-getfilecontent.py FILENAME
 
 Examples:
-python3 lab2-getfilecontent.py FILENAME
-python lab2-getfilecontent.py FILENAME
+python3 lab2-getfilecontent.py getfilecontent.txt
+python lab2-getfilecontent.py getfilecontent.txt
 '''
 import sys
 
