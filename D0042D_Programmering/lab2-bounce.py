@@ -24,11 +24,32 @@ import sys
 
 
 def bounce(n):
-    pass
+    # each time this is called it prints n twice
+    # between those print statements is the recursive call
+    # base case is n=0 when n is printed only once and then ended with return
+    # please add a print() statement after the call of this function to end the line
+
+    print(n, end=' ')
+
+    if n == 0:
+        return
+    else:
+        bounce(n-1)
+
+    print(n, end=' ')
 
 def main():
     if len(sys.argv) < 2:
         print("ERROR: Number of bounces not given.")
-    pass
+        return
+    
+    try:
+        number_of_bounces = int(sys.argv[1])
+    except ValueError:
+        print(f"ERROR: The parameter, {sys.argv[1]}, is not an integer.")
+        return
+    
+    bounce(number_of_bounces)
+    print()
 
 main()
