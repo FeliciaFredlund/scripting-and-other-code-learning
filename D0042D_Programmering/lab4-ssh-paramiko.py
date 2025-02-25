@@ -1,12 +1,13 @@
 '''
 Script for terminal to use SSH to configure an unknown number of loopback interfaces with IP addresses from a pool
-using Netmiko
+using Paramiko
 Author: Felicia Fredlund
-Last updated: 2025-02-25
+Last updated: 2025-02-XX
 
 Still to do: 
 - virtual environment
-- pip3 install netmiko
+- pip3 install cryptography
+- pip3 install paramiko
 - pip3 install getpass
 - pip3 install time 
 
@@ -14,12 +15,12 @@ How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
 
 Examples:
-python3 lab4-ssh-netmiko.py 192.160.10.1 TIO 78/32
-python3 lab4-ssh-netmiko.py 192.160.20.1 TJUGO 78/24
-python3 lab4-ssh-netmiko.py 192.160.30.1 TRETTIO 50/32
+python3 lab4-ssh-paramiko.py 192.160.10.1 TIO 78/32
+python3 lab4-ssh-paramiko.py 192.160.20.1 TJUGO 78/24
+python3 lab4-ssh-paramiko.py 192.160.30.1 TRETTIO 50/32
 '''
-from netmiko import ConnectHandler # type:ignore
 
+import paramiko # type:ignore
 import sys
 import ipaddress
 import getpass 
@@ -37,13 +38,13 @@ def main():
 
     password = getpass.getpass("Need password to connect: ")
 
-    device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
+    #device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
     
     print("## Connection phase completed ##")
     print("## Creating commands started ##")
 
-    show_run = device.send_command("show run | section interface")
-    #show_run = ""
+    #show_run = device.send_command("show run | section interface")
+    show_run = ""
     time.sleep(1)
 
     loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
@@ -60,17 +61,17 @@ def main():
     j = 0
     while j < len(cmds):
         temp_cmds = [cmds[j], cmds[j+1]]
-        device.send_config_set(temp_cmds)
+        #device.send_config_set(temp_cmds)
         j += 2
         time.sleep(1)
 
     print("## Sending commands completed ##")
 
-    output = device.send_command("show ip int br")
-    device.disconnect()
+    #output = device.send_command("show ip int br")
+    #device.disconnect()
     
     print("Show ip int br on router:")
-    print(output)
+    #print(output)
     
     print("## Script finished ##")
 
