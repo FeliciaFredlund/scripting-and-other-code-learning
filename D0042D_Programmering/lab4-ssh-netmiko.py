@@ -16,7 +16,7 @@ python3 lab4-ssh-netmiko.py 192.160.10.1 TIO 78/32
 python3 lab4-ssh-netmiko.py 192.160.20.1 TJUGO 78/24
 python3 lab4-ssh-netmiko.py 192.160.30.1 TRETTIO 50/32
 '''
-#from netmiko import ConnectHandler # type:ignore
+from netmiko import ConnectHandler # type:ignore
 
 import sys
 import ipaddress
@@ -33,15 +33,15 @@ def main():
     print("## Initial error checking complete ##")
     print("## Connection phase started ##")
 
-    #password = getpass.getpass("Need password to connect: ")
+    password = getpass.getpass("Need password to connect: ")
 
-    #device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
+    device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
     
     print("## Connection phase completed ##")
     print("## Creating commands started ##")
 
-    #show_run = device.send_command("show run | section interface")
-    show_run = ""
+    show_run = device.send_command("show run | section interface")
+    #show_run = ""
     time.sleep(1)
 
     loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
@@ -51,6 +51,7 @@ def main():
         cmds.append(ip_template.replace("y", str(last_octet + i)))
 
     print(cmds)
+
     print("## Creating commands completed ##")
 
     print("## Sending commands started ##")
@@ -58,17 +59,20 @@ def main():
     j = 0
     while j < len(cmds):
         temp_cmds = [cmds[j], cmds[j+1]]
-        #device.send_config_set(temp_cmds)
+        
+        print(temp_cmds)
+        
+        device.send_config_set(temp_cmds)
         j += 2
         time.sleep(1)
 
     print("## Sending commands completed ##")
 
-    #output = device.send_command("show ip int br")
-    #device.disconnect()
+    output = device.send_command("show ip int br")
+    device.disconnect()
     
     print("Show ip int br on router:")
-    #print(output)
+    print(output)
     
     print("## Script finished ##")
 
@@ -128,20 +132,3 @@ def parameterChecking(script_parameters=[]):
 
 if __name__ == "__main__":
     main()
-
-
-'''
-show_run = """interface FastEthernet0
-	no ip address
-!
-interface FastEthernet1
-	no ip address
-!
-interface Loopback2
-	no ip address
-!
-interface Loopback3
-	no ip address
-!
-"""
-'''

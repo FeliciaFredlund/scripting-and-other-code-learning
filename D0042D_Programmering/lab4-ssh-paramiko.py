@@ -52,6 +52,7 @@ def main():
         cmds.append(ip_template.replace("y", str(last_octet + i)))
 
     print(cmds)
+    
     print("## Creating commands completed ##")
 
     print("## Sending commands started ##")
@@ -59,6 +60,9 @@ def main():
     j = 0
     while j < len(cmds):
         temp_cmds = [cmds[j], cmds[j+1]]
+
+        print(temp_cmds)
+
         #device.send_config_set(temp_cmds)
         j += 2
         time.sleep(1)
