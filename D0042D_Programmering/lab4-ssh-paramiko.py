@@ -13,9 +13,9 @@ How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
 
 Examples:
-python3 lab4-ssh-paramiko.py 192.160.10.1 TIO 78/32
-python3 lab4-ssh-paramiko.py 192.160.20.1 TJUGO 78/24
-python3 lab4-ssh-paramiko.py 192.160.30.1 TRETTIO 50/32
+python3 lab4-ssh-paramiko.py 192.168.10.1 TIO 78/32
+python3 lab4-ssh-paramiko.py 192.168.20.1 TJUGO 78/24
+python3 lab4-ssh-paramiko.py 192.168.30.1 TRETTIO 50/32
 '''
 
 import paramiko # type:ignore
@@ -27,53 +27,91 @@ import time
 def main():    
     print("## Initial error checking started ##")
 
-    ip_address, username, last_octet, prefix = parameterChecking(sys.argv[1:])
+    hostname, username, last_octet, prefix = parameterChecking(sys.argv[1:])
 
     ip_template = getIPTemplate(username, prefix)
 
     print("## Initial error checking complete ##")
     print("## Connection phase started ##")
 
-    password = getpass.getpass("Need password to connect: ")
+    password = getpass.getpass("User password for connection: ")
+    enable_password = getpass.getpass("Password to enter privileged EXEC mode: ")
 
-    #device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
+    connection = paramiko.SSHClient()
+    connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    try:
+        connection.connect(hostname, username=username, password=password, allow_agent=False, look_for_keys=False)
+    except Exception as e:
+        print(e)
+        print("## Login failed. ##")
+        return
+    
+    channel = connection.invoke_shell()
+    time.sleep(1)
+    output = channel.recv(65535).decode()
+
+    print(output)
+
+    if ">" not in output:
+        print("## Login failed. ##")
+        connection.close()
+        return
     
     print("## Connection phase completed ##")
+    print("## Entering privileged EXEC mode started ##")
+
+    channel.send("enable\n")
+    time.sleep(1)
+    channel.send(enable_password + "\n")
+    time.sleep(1)
+    output = channel.recv(65535).decode()
+
+    print(output)
+
+    if "#" not in output:
+        print("## Entering privileged EXEC mode failed. ##")
+        connection.close()
+        return
+
+    print("## Entering privileged EXEC mode finished ##")
     print("## Creating commands started ##")
 
-    #show_run = device.send_command("show run | section interface")
-    show_run = ""
+    channel.send("show run | section interface\n")
+    time.sleep(1)
+    show_run = channel.recv(65535).decode()
     time.sleep(1)
 
     loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
     cmds = []
     for i in range(len(loopbacks)):
-        cmds.append(loopbacks[i])
-        cmds.append(ip_template.replace("y", str(last_octet + i)))
+        cmds.append(loopbacks[i] + "\n")
+        cmds.append(ip_template.replace("y", str(last_octet + i)) + "\n")
 
     print(cmds)
     
     print("## Creating commands completed ##")
-
     print("## Sending commands started ##")
 
-    j = 0
-    while j < len(cmds):
-        temp_cmds = [cmds[j], cmds[j+1]]
+    channel.send("conf t\n")
+    time.sleep(1)
 
-        print(temp_cmds)
-
-        #device.send_config_set(temp_cmds)
-        j += 2
+    for cmd in cmds:
+        channel.send(cmd)
         time.sleep(1)
+
+    channel.send("end\n")
+    time.sleep(1)
 
     print("## Sending commands completed ##")
 
-    #output = device.send_command("show ip int br")
-    #device.disconnect()
+    channel.send("show ip int br")
+    time.sleep(1)
+    output = channel.recv(65535).decode()
+    connection.close()
     
     print("Show ip int br on router:")
-    #print(output)
+    print(output)
     
     print("## Script finished ##")
 
