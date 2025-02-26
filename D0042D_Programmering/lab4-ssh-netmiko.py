@@ -7,8 +7,6 @@ Last updated: 2025-02-25
 Still to do: 
 - virtual environment
 - pip3 install netmiko
-- pip3 install getpass
-- pip3 install time 
 
 How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
@@ -18,7 +16,7 @@ python3 lab4-ssh-netmiko.py 192.160.10.1 TIO 78/32
 python3 lab4-ssh-netmiko.py 192.160.20.1 TJUGO 78/24
 python3 lab4-ssh-netmiko.py 192.160.30.1 TRETTIO 50/32
 '''
-from netmiko import ConnectHandler # type:ignore
+#from netmiko import ConnectHandler # type:ignore
 
 import sys
 import ipaddress
@@ -28,22 +26,22 @@ import time
 def main():    
     print("## Initial error checking started ##")
 
-    ip_address, username, last_octet, prefix = errorHandling(sys.argv[1:])
+    ip_address, username, last_octet, prefix = parameterChecking(sys.argv[1:])
 
     ip_template = getIPTemplate(username, prefix)
 
     print("## Initial error checking complete ##")
     print("## Connection phase started ##")
 
-    password = getpass.getpass("Need password to connect: ")
+    #password = getpass.getpass("Need password to connect: ")
 
-    device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
+    #device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
     
     print("## Connection phase completed ##")
     print("## Creating commands started ##")
 
-    show_run = device.send_command("show run | section interface")
-    #show_run = ""
+    #show_run = device.send_command("show run | section interface")
+    show_run = ""
     time.sleep(1)
 
     loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
@@ -60,17 +58,17 @@ def main():
     j = 0
     while j < len(cmds):
         temp_cmds = [cmds[j], cmds[j+1]]
-        device.send_config_set(temp_cmds)
+        #device.send_config_set(temp_cmds)
         j += 2
         time.sleep(1)
 
     print("## Sending commands completed ##")
 
-    output = device.send_command("show ip int br")
-    device.disconnect()
+    #output = device.send_command("show ip int br")
+    #device.disconnect()
     
     print("Show ip int br on router:")
-    print(output)
+    #print(output)
     
     print("## Script finished ##")
 
@@ -85,38 +83,51 @@ def getIPTemplate(network_name, prefix):
     mask = ipaddress.IPv4Network("128.0.0.0/" + str(prefix)).netmask
     return f"ip address 192.168.{network_id}.y {mask}"
 
-def errorHandling(script_parameters=[]):
-    if len(script_parameters) != 3:
-        print("Error: Not enough arguments to function. Needs IP address, username, and last_octet/prefix.")
-        sys.exit(1)
+def parameterChecking(script_parameters=[]):
+    error_text = ""
     
-    ip_address = ipaddress.ip_address(script_parameters[0]).exploded
+    # Checking number of arguments
+    if len(script_parameters) != 3:
+        error_text += "Error: Not enough arguments. Needs IP address, username, and last_octet/prefix.\n"
+    
+    # Checking IP address
+    try:
+        ip_address = ipaddress.ip_address(script_parameters[0]).exploded
+    except:
+        error_text += "Error: Not a valid IP address.\n"
 
+    # Checking username
     username = script_parameters[1]
-    if (username != "TIO") and (username != "TJUGO") and (username != "TRETTIO"):
-        print("Error: Username is not correct.")
-        sys.exit(1)
+    if username != "TIO" and username != "TJUGO" and username != "TRETTIO":
+        error_text += "Error: Username is not correct.\n"
 
+    # Checking last octet and prefix
     last_octet, prefix = script_parameters[2].split("/")
 
     try:
         last_octet = int(last_octet)
-        prefix = int(prefix)
+        if last_octet < 0 or last_octet > 255:
+            error_text += "Error: Last octet is not a valid IPv4 octet.\n"
     except:
-        print("Error: last octet or prefix is not a number (integer).")
-        sys.exit(1)
+        error_text += "Error: Last octet is not a number (integer).\n"
 
-    if last_octet < 0 or last_octet > 255:
-        print(f"Error: Not a valid last octet.")
-        sys.exit(1)
-
-    if prefix < 1 or prefix > 32:
-        print("Error: Prefix needs to be valid for an IPv4 address.")
-        sys.exit(1)
+    try:
+        prefix = int(prefix)
+        if prefix < 1 or prefix > 32:
+            error_text += "Error: Prefix needs to be valid for an IPv4 address.\n"
+    except:
+        error_text += "Error: Prefix is not a number (integer).\n"
     
+    # If there were errors, this executes
+    if len(error_text) != 0:
+        print(error_text)
+        sys.exit(1)
+
     return ip_address, username, last_octet, prefix
 
-main()
+
+if __name__ == "__main__":
+    main()
 
 
 '''
@@ -130,7 +141,6 @@ interface Loopback2
 	no ip address
 !
 interface Loopback3
-	switchport mode trunk
 	no ip address
 !
 """
