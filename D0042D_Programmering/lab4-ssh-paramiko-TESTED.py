@@ -2,7 +2,12 @@
 Script for terminal to use SSH to configure an unknown number of loopback interfaces with IP addresses from a pool
 using Paramiko
 Author: Felicia Fredlund
-Last updated: 2025-02-28
+Last updated: 2025-02-27
+
+Still to do: 
+- virtual environment
+- pip3 install cryptography
+- pip3 install paramiko
 
 How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
@@ -30,6 +35,7 @@ def main():
     print("## Connection phase started ##")
 
     password = getpass.getpass("User password for connection: ")
+    #enable_password = getpass.getpass("Password to enter privileged EXEC mode: ")
 
     connection = paramiko.SSHClient()
     connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -45,23 +51,45 @@ def main():
     time.sleep(1)
     output = channel.recv(65535).decode()
 
+    #print(output)
+
+    #if ">" not in output or "#" not in output:
+    #    print(output)
+    #    print("## Login failed. ## INVOKE SHELL")
+    #    connection.close()
+    #    return
+    
+    print("## Connection phase completed ##")
+    print("## Entering privileged EXEC mode started ##")
+
+    #channel.send("enable\n")
+    #time.sleep(1)
+    #channel.send(enable_password + "\n")
+    #time.sleep(1)
+    #output = channel.recv(65535).decode()
+
+    #print(output)
+
     if "#" not in output:
-        print("## Login failed. Specifically Channel.invoke_shell() ##")
+        print("## Entering privileged EXEC mode failed. ##")
         connection.close()
         return
     
-    print("## Connection phase completed ##")
+    print("## Entering privileged EXEC mode finished ##")
     print("## Creating commands started ##")
 
     channel.send("show run | section interface Loopback\n")
     time.sleep(5)
-    output = channel.recv(65535).decode()
+    show_run = channel.recv(65535).decode()
+    time.sleep(1)
 
-    loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), output.splitlines()))
+    loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
     cmds = []
     for i in range(len(loopbacks)):
         cmds.append(loopbacks[i] + "\n")
         cmds.append(ip_template.replace("y", str(last_octet + i)) + "\n")
+
+    #print(cmds)
     
     print("## Creating commands completed ##")
     print("## Sending commands started ##")
@@ -71,8 +99,8 @@ def main():
 
     for cmd in cmds:
         channel.send(cmd)
+        output = channel.recv(65535).decode()
         time.sleep(1)
-        output = channel.recv(65535).decode() # To clear the channel
 
     channel.send("end\n")
     time.sleep(1)
@@ -85,7 +113,7 @@ def main():
     output = channel.recv(65535).decode()
     connection.close()
     
-    print("Show running config, but only interface loopback:")
+    print("Show run interface loopback router:")
     print(output)
     
     print("## Script finished ##")
@@ -98,7 +126,6 @@ def getIPTemplate(network_name, prefix):
     elif network_name == "TRETTIO":
         network_id = 31
 
-    # A carefully selected network id chosen to be able to get any netmask sent
     mask = ipaddress.IPv4Network("128.0.0.0/" + str(prefix)).netmask
     return f"ip address 192.168.{network_id}.y {mask}"
 
@@ -146,3 +173,20 @@ def parameterChecking(script_parameters=[]):
 
 if __name__ == "__main__":
     main()
+
+
+'''
+show_run = """interface FastEthernet0
+	no ip address
+!
+interface FastEthernet1
+	no ip address
+!
+interface Loopback2
+	no ip address
+!
+interface Loopback3
+	no ip address
+!
+"""
+'''

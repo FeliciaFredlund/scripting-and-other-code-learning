@@ -1,19 +1,23 @@
 '''
 Script for terminal to use SSH to configure an unknown number of loopback interfaces with IP addresses from a pool
-using Paramiko
+using Netmiko
 Author: Felicia Fredlund
-Last updated: 2025-02-28
+Last updated: 2025-02-27
+
+Still to do: 
+- virtual environment
+- pip3 install netmiko
 
 How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
 
 Examples:
-python3 lab4-ssh-paramiko.py 192.168.10.1 TIO 78/32
-python3 lab4-ssh-paramiko.py 192.168.20.1 TJUGO 78/24
-python3 lab4-ssh-paramiko.py 192.168.30.1 TRETTIO 50/32
+python3 lab4-ssh-netmiko.py 192.168.10.1 TIO 78/32
+python3 lab4-ssh-netmiko.py 192.168.20.1 TJUGO 78/24
+python3 lab4-ssh-netmiko.py 192.168.30.1 TRETTIO 50/32
 '''
+from netmiko import ConnectHandler # type:ignore
 
-import paramiko # type:ignore
 import sys
 import ipaddress
 import getpass 
@@ -22,70 +26,51 @@ import time
 def main():    
     print("## Initial error checking started ##")
 
-    hostname, username, last_octet, prefix = parameterChecking(sys.argv[1:])
+    ip_address, username, last_octet, prefix = parameterChecking(sys.argv[1:])
 
     ip_template = getIPTemplate(username, prefix)
 
     print("## Initial error checking complete ##")
     print("## Connection phase started ##")
 
-    password = getpass.getpass("User password for connection: ")
+    password = getpass.getpass("Need password to connect: ")
 
-    connection = paramiko.SSHClient()
-    connection.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    try:
-        connection.connect(hostname, username=username, password=password, allow_agent=False, look_for_keys=False)
-    except Exception as e:
-        print(e)
-        print("## Login failed. ##")
-        return
-    
-    channel = connection.invoke_shell()
-    time.sleep(1)
-    output = channel.recv(65535).decode()
-
-    if "#" not in output:
-        print("## Login failed. Specifically Channel.invoke_shell() ##")
-        connection.close()
-        return
+    device = ConnectHandler(device_type="cisco_ios", host=ip_address, username=username, password=password)
     
     print("## Connection phase completed ##")
     print("## Creating commands started ##")
 
-    channel.send("show run | section interface Loopback\n")
-    time.sleep(5)
-    output = channel.recv(65535).decode()
+    show_run = device.send_command("show run | section interface Loopback")
+    time.sleep(1)
 
-    loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), output.splitlines()))
+    loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
     cmds = []
     for i in range(len(loopbacks)):
-        cmds.append(loopbacks[i] + "\n")
-        cmds.append(ip_template.replace("y", str(last_octet + i)) + "\n")
-    
+        cmds.append(loopbacks[i])
+        cmds.append(ip_template.replace("y", str(last_octet + i)))
+
+    print(cmds)
+
     print("## Creating commands completed ##")
+
     print("## Sending commands started ##")
 
-    channel.send("conf t\n")
-    time.sleep(1)
-
-    for cmd in cmds:
-        channel.send(cmd)
+    j = 0
+    while j < len(cmds):
+        temp_cmds = [cmds[j], cmds[j+1]]
+        
+        print(temp_cmds)
+        
+        device.send_config_set(temp_cmds)
+        j += 2
         time.sleep(1)
-        output = channel.recv(65535).decode() # To clear the channel
-
-    channel.send("end\n")
-    time.sleep(1)
-    output = channel.recv(65535).decode()
 
     print("## Sending commands completed ##")
 
-    channel.send("show run | section interface Loopback\n")
-    time.sleep(5)
-    output = channel.recv(65535).decode()
-    connection.close()
+    output = device.send_command("show ip int br")
+    device.disconnect()
     
-    print("Show running config, but only interface loopback:")
+    print("Show ip int br on router:")
     print(output)
     
     print("## Script finished ##")
@@ -98,7 +83,6 @@ def getIPTemplate(network_name, prefix):
     elif network_name == "TRETTIO":
         network_id = 31
 
-    # A carefully selected network id chosen to be able to get any netmask sent
     mask = ipaddress.IPv4Network("128.0.0.0/" + str(prefix)).netmask
     return f"ip address 192.168.{network_id}.y {mask}"
 
@@ -143,6 +127,7 @@ def parameterChecking(script_parameters=[]):
         sys.exit(1)
 
     return ip_address, username, last_octet, prefix
+
 
 if __name__ == "__main__":
     main()

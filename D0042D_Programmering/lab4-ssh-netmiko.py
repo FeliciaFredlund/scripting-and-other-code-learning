@@ -2,11 +2,7 @@
 Script for terminal to use SSH to configure an unknown number of loopback interfaces with IP addresses from a pool
 using Netmiko
 Author: Felicia Fredlund
-Last updated: 2025-02-25
-
-Still to do: 
-- virtual environment
-- pip3 install netmiko
+Last updated: 2025-02-28
 
 How to run:
 python(3) FILENAME.py IP-ADDRESS USERNAME LAST_OCTET/PREFIX
@@ -40,8 +36,7 @@ def main():
     print("## Connection phase completed ##")
     print("## Creating commands started ##")
 
-    show_run = device.send_command("show run | section interface")
-    #show_run = ""
+    show_run = device.send_command("show run | section interface Loopback")
     time.sleep(1)
 
     loopbacks = list(filter(lambda line: line.startswith("interface Loopback"), show_run.splitlines()))
@@ -50,18 +45,12 @@ def main():
         cmds.append(loopbacks[i])
         cmds.append(ip_template.replace("y", str(last_octet + i)))
 
-    print(cmds)
-
     print("## Creating commands completed ##")
-
     print("## Sending commands started ##")
 
     j = 0
     while j < len(cmds):
-        temp_cmds = [cmds[j], cmds[j+1]]
-        
-        print(temp_cmds)
-        
+        temp_cmds = [cmds[j], cmds[j+1]]        
         device.send_config_set(temp_cmds)
         j += 2
         time.sleep(1)
@@ -84,6 +73,7 @@ def getIPTemplate(network_name, prefix):
     elif network_name == "TRETTIO":
         network_id = 31
 
+    # A carefully selected network id chosen to be able to get any netmask sent
     mask = ipaddress.IPv4Network("128.0.0.0/" + str(prefix)).netmask
     return f"ip address 192.168.{network_id}.y {mask}"
 
