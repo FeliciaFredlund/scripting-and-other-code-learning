@@ -16,7 +16,7 @@ python3 lab4-ssh-netmiko.py 192.168.10.1 TIO 78/32
 python3 lab4-ssh-netmiko.py 192.168.20.1 TJUGO 78/24
 python3 lab4-ssh-netmiko.py 192.168.30.1 TRETTIO 50/32
 '''
-from netmiko import ConnectHandler # type:ignore
+from netmiko import ConnectHandler
 
 import sys
 import ipaddress
