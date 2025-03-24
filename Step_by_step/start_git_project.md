@@ -6,7 +6,7 @@
 2. Copy the link
 3. Navigate to the folder where you want the project folder to be
 4. mkdir NEW_DIR
-5. git clone REPO_URL NEW_DIR <--- OBS CURRENTLY UNTESTED
+5. git clone REPO_URL NEW_DIR
 6. Done
 
 ## Starting from an exisiting project
