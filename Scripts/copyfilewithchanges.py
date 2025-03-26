@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 '''
 Script for take one file and replace a word with something else and save to a new file
 Author: Felicia Fredlund
