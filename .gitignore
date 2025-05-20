@@ -5,3 +5,8 @@
 .DS_Store
 
 .venv
+
+__pycache__
+Assorted_Learning/__pycache__
+Scripts/__pycache__
+Step_by_step/__pycache__
