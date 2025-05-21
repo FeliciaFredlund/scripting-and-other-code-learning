@@ -82,4 +82,7 @@ which is why my first implementation with swapping didn't work.
 That they decided to use end as length of list to start and go from range(1, end) is just a different way of doing it.
 
 So my biggest problem was how to handle the bigger loop, and doing that efficiently. The sorting I had a fine grip on.
+
+Boot.dev doesn't show it hear, but later shows that the temp variable isn't needed.
+nums[i], nums[i-1] = nums[i-1], nums[i]
 '''

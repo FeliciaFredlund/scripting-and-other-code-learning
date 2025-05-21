@@ -3,7 +3,7 @@
 '''
 Script for writing quick sort from scratch as practice
 Author: Felicia Fredlund
-Last updated: 2025-05-19
+Last updated: 2025-05-20
 
 How to run:
 python(3) quicksort.py PARAMETERS

@@ -3,7 +3,7 @@
 '''
 Script for writing insert sort from scratch as practice
 Author: Felicia Fredlund
-Last updated: 2025-05-20
+Last updated: 2025-05-19
 
 How to run:
 python(3) insertsort.py PARAMETERS
