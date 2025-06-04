@@ -18,6 +18,7 @@ Methods: enqueue (add to queue), dequeue (remove from the queue), peek (looks at
 A chain of nodes, efficient for inserts and deletes.
 A linked list is where elements are not stored next to each other in memory, instead, each item references the next in a chain.
 Wikipedia: A linked list is a linear collection of data elements whose order is not given by their physical placement in memory. Instead, each element points to the next. It is a data structure consisting of a collection of nodes which together represent a sequence. In its most basic form, each node contains data, and a reference (in other words, a link) to the next node in the sequence. This structure allows for efficient insertion or removal of elements from any position in the sequence during iteration. More complex variants add additional links, allowing more efficient insertion or removal of nodes at arbitrary positions.
+A basic linked list only hold the next node in the sequence; a doubly linked list also holds the previous node in the sequence. Keeping track of the tail as well as the head seems to be a choice.
 
 ## Binary Tree
 A tree where each node has up to two children.
