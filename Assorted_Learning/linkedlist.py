@@ -3,7 +3,7 @@
 '''
 Script for implementing the linked list data structure.
 Author: Felicia Fredlund
-Last updated: 2025-06-XX
+Last updated: 2025-06-05
 '''
 
 from __future__ import annotations
@@ -86,16 +86,24 @@ class LinkedList:
         '''Get size of linked list'''
         return self.__size
     
-    def __eq__(self, other):
+    def __eq__(self, other: LinkedList):
         '''Check if two LinkedLists are the same when it comes to Node values.
         Use "is" if you want to compare whether they point to the same memory location'''
-        pass # use zip()?????
+        if len(self) != len(other):
+            return False
+        
+        for snode, onode in zip(self, other):
+            if snode != onode:
+                return False
+        return True
+
+
+    ## General list methods that aren't built in functions
 
     def is_empty(self) -> bool:
         '''Check if the linked list is empty'''
         return self.__size == 0
 
-    ## General list methods that aren't built in functions
     def get_head(self) -> Node:
         '''Get first node'''
         return self.__head
@@ -121,12 +129,15 @@ class LinkedList:
 
 
     ## Appending/Inserting
-    def append(self, new_node: Node):
+
+    def append(self, new_node: Node, extend_flag = False):
         '''Append to the end. Will be last node of the linked list'''
-        new_node.set_next(None) # This method is not used to extend with multiple nodes
+        if not extend_flag:
+            new_node.set_next(None)
 
         if self.is_empty():
             self.__head = new_node
+            self.__head.set_previous(None)
             self.__size = 1
             return
         
@@ -142,14 +153,14 @@ class LinkedList:
         self.__tail = new_node
         self.__size += 1
     
-    def prepend(self, new_node: Node):
+    def prepend(self, new_node: Node, preextend_flag = False):
         '''Append to the front/start of the linked list'''
-        new_node.set_previous(None) # This method is not used to preextend with multiple nodes
+        if not preextend_flag:
+            new_node.set_previous(None)
 
         if self.is_empty():
             self.__head = new_node
             self.__head.set_next(None)
-            self.__head.set_previous(None)
             self.__size = 1
             return
 
@@ -158,7 +169,6 @@ class LinkedList:
             self.__tail.set_previous(new_node)
             self.__head = new_node
             self.__head.set_next(self.__tail)
-            self.__head.set_previous(None)
             self.__size = 2
             return
         
@@ -167,27 +177,56 @@ class LinkedList:
         self.__head = new_node
         self.__size += 1
 
-    def insert_after(self, insertion_point: Node, new_node: Node):
-        '''Insert after a certain node'''
-        pass
-
     def insert_before(self, insertion_point: Node, new_node: Node):
-        '''Insert before a certain node'''
-        pass
+        '''Insert before a certain node. LinkedList < [...] new_node insertion_point [...] >'''
+        if insertion_point is self.__head:
+            self.prepend(new_node)
+            return
+        
+        before_insertion_point = insertion_point.get_previous()
+        
+        new_node.set_previous(before_insertion_point)
+        new_node.set_next(insertion_point)
+        
+        before_insertion_point.set_next(new_node)
+        insertion_point.set_previous(new_node)
+        self.__size += 1
+
+    def insert_after(self, insertion_point: Node, new_node: Node):
+        '''Insert after a certain node. LinkedList < [...] insertion_point new_node [...] >'''
+        next_node_after_insertion = insertion_point.get_next()
+        if next_node_after_insertion is None: # insertion_point was self.__tail (or self.__head when self.__size is 1)
+            self.append(new_node)
+        else:
+            self.insert_before(next_node_after_insertion, new_node)
 
     def insert_at_index(self, index: int, new_node: Node):
-        '''Insert the new node at index'''
-        pass
+        '''Insert the new node at index. LinkedList < [...] new_node previous_node_at_that_index [...] >'''
+        insertion_point = self.get(index)
+        if insertion_point is not None:
+            self.insert_before(insertion_point, new_node)
 
     def extend(self, new_node: Node):
-        '''Extends the link list with multiple Nodes already linked through the next property'''
-        pass
+        '''Extends the link list with multiple Nodes already linked'''
+        self.append(new_node, True)
+        new_tail = self.__tail.get_next()
+        while new_tail is not None:
+            self.__tail = new_tail
+            self.__size += 1
+            new_tail = new_tail.get_next()
 
     def preextend(self, new_node: Node):
-        '''Extends the front of the link list with multiple Nodes already linked through the next property'''
-        pass
+        '''Extends the front of the link list with multiple Nodes already linked'''
+        self.prepend(new_node, True)
+        new_head = self.__head.get_previous()
+        while new_head is not None:
+            self.__head = new_head
+            self.__size += 1
+            new_head = new_head.get_previous()
+
 
     # Removing/deleting
+
     def remove_head(self) -> Node:
         '''Remove the first node and return it'''
         old_head = self.__head

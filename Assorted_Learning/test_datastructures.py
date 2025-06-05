@@ -137,6 +137,109 @@ def testLinkedList():
     print(f"Compare node's value to 11. node == 11 (should be False): {node == 11}")
     print("\n==========================\n")
 
+    ## Check if __eq__ works on LinkedLists
+    ll2 = LinkedList()
+    for i in range(4):
+        ll.append(Node(i))
+        ll2.append(Node(i))
+
+    print("Action:", "create ll2 and populate both ll and ll2 with nodes and compare\n")
+
+    print(f"ll = {ll}")
+    print(f"ll2 = {ll2}")
+    print(f"ll == ll2 (should be True): {ll == ll2}")
+    
+    print(f"\nAdd another element to ll2")
+    ll2.append(Node(4))
+    print(f"ll = {ll}")
+    print(f"ll2 = {ll2}")
+    print(f"ll == ll2 (should be False): {ll == ll2}")
+    
+    print(f"\nMake ll and ll2 same length but with a different value nodes")
+    ll2.remove_at_index(2)
+    print(f"ll = {ll}")
+    print(f"ll2 = {ll2}")
+    print(f"ll == ll2 (should be False): {ll == ll2}")
+    print("\n==========================\n")
+
+    ## Check insertion methods
+    print("Action:", "checking insertion methods\n")
+
+    print(ll)
+    print(f"Size: {len(ll)}")
+    
+    print("\nInsert new node Node(10) at index 1 (insert_at_index). Should be second element")
+    ll.insert_at_index(1, Node(10))
+    print(ll)
+    print(f"Size: {len(ll)}")
+    
+    print("\nInsert new node Node(20) before the first node (insert_before). Should be first element")
+    ll.insert_before(ll.get_head(), Node(20))
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Head: {ll.get_head()}")
+    
+    print("\nInsert new node Node(30) before the tail node (insert_before). Should be second to last element")
+    ll.insert_before(ll.get_tail(), Node(30))
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Tail: {ll.get_tail()}")
+
+    print("\nInsert new node Node(40) after the tail node (insert_after). Should be the tail")
+    ll.insert_after(ll.get_tail(), Node(40))
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Tail: {ll.get_tail()}")
+
+    print("\nInsert new node Node(50) after the head node (insert_after). Should be the second element")
+    ll.insert_after(ll.get_head(), Node(50))
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Head: {ll.get_head()}")
+    print("\n==========================\n")
+
+    ## Check if extend and preextend
+    ll = LinkedList()
+    ll.append(Node(0))
+    ll.append(Node(1))
+    ll.append(Node(2))
+    ll.append(Node(3))
+
+    node = Node(10)
+    node2 = Node(20)
+    node3 = Node(30)
+    node.set_next(node2)
+    node2.set_previous(node)
+    node2.set_next(node3)
+    node3.set_previous(node2)
+
+    print("Action:", "extend and preextend\n")
+
+    print(ll)
+    ll.extend(node)
+    print(f"Extended ll with Node chain (10, 20, 30):")
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Head: {ll.get_head()}")
+    print(f"Tail: {ll.get_tail()}")
+
+    node = Node(100)
+    node2 = Node(200)
+    node3 = Node(300)
+    node.set_next(node2)
+    node2.set_previous(node)
+    node2.set_next(node3)
+    node3.set_previous(node2)
+
+    ll.preextend(node3)
+    print(f"Preextended ll with Node chain (100, 200, 300):")
+    print(ll)
+    print(f"Size: {len(ll)}")
+    print(f"Head: {ll.get_head()}")
+    print(f"Tail: {ll.get_tail()}")
+    print("\n==========================\n")
+
+
 
 if __name__ == "__main__":
     testLinkedList()
