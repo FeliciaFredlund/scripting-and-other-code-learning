@@ -22,6 +22,12 @@ class Node:
     def __repr__(self):
         '''The string representation of coding a Node'''
         return f"Node({self.__value})"
+    
+    def __eq__(self, other):
+        '''Test if the __value of two nodes are the same or if node.__value is same as the value sent in'''
+        if isinstance(other, Node):
+            return self.__value == other.__value
+        return self.__value == other
 
     def set_next(self, node: Node):
         '''Set the next node property'''
@@ -62,6 +68,7 @@ class LinkedList:
             current_node = current_node.get_next()
 
     def __str__(self):
+        '''String representation of a LinkedList, as LinkedList < Node Node Node >'''
         string = "LinkedList < "
         for node in self:
             string += str(node) + " "
@@ -69,6 +76,7 @@ class LinkedList:
         return string
 
     def __repr__(self):
+        '''Code representation of how a LinkedList could be created. Don't call on large lists.'''
         code = "LinkedList()"
         for node in self:
             code += ".append(" + repr(node) + ")"
@@ -77,6 +85,11 @@ class LinkedList:
     def __len__(self):
         '''Get size of linked list'''
         return self.__size
+    
+    def __eq__(self, other):
+        '''Check if two LinkedLists are the same when it comes to Node values.
+        Use "is" if you want to compare whether they point to the same memory location'''
+        pass # use zip()?????
 
     def is_empty(self) -> bool:
         '''Check if the linked list is empty'''
@@ -208,23 +221,25 @@ class LinkedList:
 
     def remove(self, node_to_remove: Node):
         '''Remove a specific node'''
-        if node_to_remove is not None:
-            if node_to_remove is self.__head:
-                self.remove_head()
-                return
-            if node_to_remove is self.__tail:
-                self.remove_tail()
-                return
-            
-            if node_to_remove.get_next() is not None and node_to_remove.get_previous is not None:
-                node_before_removed = node_to_remove.get_previous()
-                node_after_removed = node_to_remove.get_next()
-                node_before_removed.set_next(node_after_removed)
-                node_to_remove.set_next(None)
-                node_to_remove.set_previous(None)
-                self.__size -= 1
-                if len(self) == 1:
-                    self.__tail = None
+        if node_to_remove is None:
+            return
+        
+        if node_to_remove is self.__head:
+            self.remove_head()
+            return
+        if node_to_remove is self.__tail:
+            self.remove_tail()
+            return
+        
+        if node_to_remove.get_next() is not None and node_to_remove.get_previous is not None:
+            node_before_removed = node_to_remove.get_previous()
+            node_after_removed = node_to_remove.get_next()
+            node_before_removed.set_next(node_after_removed)
+            node_to_remove.set_next(None)
+            node_to_remove.set_previous(None)
+            self.__size -= 1
+            if len(self) == 1:
+                self.__tail = None
 
     def remove_at_index(self, index: int) -> Node:
         '''Remove the node at index and return it, or return None if index out of bounds'''

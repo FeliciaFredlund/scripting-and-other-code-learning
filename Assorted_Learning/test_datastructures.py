@@ -124,6 +124,19 @@ def testLinkedList():
     print(ll)
     print("\n==========================\n")
 
+    ## Check if Nodes __eq__ work as intended
+    node = Node(10)
+    node2 = Node(10)
+
+    print("Action:", "made two Node(10) and will compare them\n")
+
+    print(f"Compare node's and node2's values. node == node2 (should be True): {node == node2}")
+    print(f"Compare node's value to 10. node == 10 (should be True): {node == 10}")
+    node2.set_value(11)
+    print(f"Change node2's value to 11 and compare again. node == node2 (should be False): {node == node2}")
+    print(f"Compare node's value to 11. node == 11 (should be False): {node == 11}")
+    print("\n==========================\n")
+
 
 if __name__ == "__main__":
     testLinkedList()
