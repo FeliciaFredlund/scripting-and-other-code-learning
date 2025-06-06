@@ -21,7 +21,22 @@ Wikipedia: A linked list is a linear collection of data elements whose order is 
 A basic linked list only hold the next node in the sequence; a doubly linked list also holds the previous node in the sequence. Keeping track of the tail as well as the head seems to be a choice.
 
 ## Binary Tree
-A tree where each node has up to two children.
+A tree where each node has up to two children, and only one parent. A Binary Search Tree is a sorted binary tree, that is a data structure with the key of each internal node being greater than all the keys in the respective node's left subtree and less than the ones in its right subtree. 
+
+1. Instead of an unbounded list of children, each node has at most 2 children
+2. The left child's value must be less than its parent's value
+3. The right child's value must be greater than its parent's value
+4. No two nodes in the BST can have the same value
+
+Add/insert (self balancing or not??!?!?!?!), remove, search (node exists), get_min, get_max, preorder_traversal (Sometimes it's useful (albeit a bit slow) to iterate over all the nodes in the tree. A "preorder" traversal is a way to visit all the nodes in a tree. It's called "preorder" because the current node is visited before its children. Recursive?!?), postorder_traversal (A "postorder" traversal also visits all the nodes in a tree. It's called "postorder" because the current node is visited after its children. Recursive?!), inorder_traversal (An "inorder" traversal is the most intuitive way to visit all the nodes in a tree. It's called "inorder" because the current node is visited between its children. Recursive?!), height
+
+     4
+ 2       7
+1       6
+
+Preorder: [4, 2, 1, 7, 6]
+Postorder: [1, 2, 6, 7, 4]
+Inorder: [1, 2, 4, 6, 7]
 
 ## Red Black Tree
 A self-balancing binary tree using colors.
