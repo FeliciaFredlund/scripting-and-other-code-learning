@@ -64,7 +64,7 @@ class Tree:
         '''TEXT'''
         pass
 
-    def search(self, value) -> Node:
+    def search(self, value) -> Node: # BFS or DFS??? :eyes:
         '''TEXT'''
         pass
 
