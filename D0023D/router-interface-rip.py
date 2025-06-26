@@ -1,4 +1,4 @@
-from netmiko import ConnectHandler # type: ignore
+from netmiko import ConnectHandler
 from datetime import datetime
 
 start_time = datetime.now()

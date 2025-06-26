@@ -30,19 +30,33 @@ A tree where each node has up to two children, and only one parent. A Binary Sea
 
 Add/insert (self balancing or not??!?!?!?!), remove, search (node exists), get_min, get_max, preorder_traversal (Sometimes it's useful (albeit a bit slow) to iterate over all the nodes in the tree. A "preorder" traversal is a way to visit all the nodes in a tree. It's called "preorder" because the current node is visited before its children. Recursive?!?), postorder_traversal (A "postorder" traversal also visits all the nodes in a tree. It's called "postorder" because the current node is visited after its children. Recursive?!), inorder_traversal (An "inorder" traversal is the most intuitive way to visit all the nodes in a tree. It's called "inorder" because the current node is visited between its children. Recursive?!), height
 
-     4
- 2       7
+      4
+  2       7
 1       6
 
-Preorder: [4, 2, 1, 7, 6]
-Postorder: [1, 2, 6, 7, 4]
-Inorder: [1, 2, 4, 6, 7]
+Preorder: [4, 2, 1, 7, 6] It's called "preorder" because the current node is visited before its children.
+Postorder: [1, 2, 6, 7, 4]  It's called "postorder" because the current node is visited after its children. 
+Inorder: [1, 2, 4, 6, 7] It's called "inorder" because the current node is visited between its children.
 
 ## Red Black Tree
-A self-balancing binary tree using colors.
+A self-balancing binary tree using colors. When inserting, always set the new node to red. After insertion, do a recolor of the tree and rotations as needed.
+
+- Each node is either red or black.
+- The root is black.
+- All Nil leaf nodes are black.
+**- If a node is red, then both its children are black.**
+- All paths from a single node go through the same number of black nodes to reach any of its descendant Nil (black) nodes.
+
+When rotating left:
+- The "pivot" node's initial parent becomes its left child
+- The "pivot" node's old left child becomes its initial parent's new right child
+
+When rotating right:
+- The "pivot" node's initial parent becomes its right child
+- The "pivot" node's old right child becomes its initial parent's new left child
 
 ## Hashmap
-A data structure that maps keys to values.
+A data structure that maps keys to values. Hashmaps are made up of arrays on the backend (or lists in Python). The key value hashes down to the index for its value. So you need a hashing algorithm with few collisions, and/or built in functionality to handle collisions (this is what actually happens).
 
 ## Try/Tries
 A tree used for storing and searching words efficiently.

@@ -1,4 +1,4 @@
-from netmiko import ConnectHandler # type: ignore
+from netmiko import ConnectHandler
 
 # routern vi ska använda SSH för att testa anslutning
 router = {
