@@ -56,10 +56,39 @@ When rotating right:
 - The "pivot" node's old right child becomes its initial parent's new left child
 
 ## Hashmap
-A data structure that maps keys to values. Hashmaps are made up of arrays on the backend (or lists in Python). The key value hashes down to the index for its value. So you need a hashing algorithm with few collisions, and/or built in functionality to handle collisions (this is what actually happens).
+A data structure that maps keys to values. Hashmaps are made up of arrays on the backend (or lists in Python). The key hashes down to the index which is where the key and value is stored. So you need a hashing algorithm with few collisions, and/or built in functionality to handle collisions (this is what actually happens).
 
 ## Try/Tries
-A tree used for storing and searching words efficiently.
+A tree used for storing and searching words efficiently. A trie is also often referred to as a "prefix tree" because it can be used to efficiently find all of the words that start with a given prefix. In Python, a trie is easily implemented as a nested tree of dictionaries where each key is a character that maps to the next character in a word.
+
+hello and hi. * as end symbol
+```py
+{
+	"h": {
+		"e": {
+			"l": {
+				"l": {
+					"o": {
+						"*": True
+					}
+				},
+				"p": {
+					"*": True
+				}
+			}
+		},
+		"i": {
+			"*": True
+		}
+	}
+}
+```
+
+From wikipedia:
+> In computer science, a trie (/ˈtraɪ/, /ˈtriː/ ⓘ), also known as a digital tree or prefix tree,[1] is a specialized search tree data structure used to store and retrieve strings from a dictionary or set. Unlike a binary search tree, nodes in a trie do not store their associated key. Instead, each node's position within the trie determines its associated key, with the connections between nodes defined by individual characters rather than the entire key.
+> Tries are particularly effective for tasks such as autocomplete, spell checking, and IP routing, offering advantages over hash tables due to their prefix-based organization and lack of hash collisions. Every child node shares a common prefix with its parent node, and the root node represents the empty string. While basic trie implementations can be memory-intensive, various optimization techniques such as compression and bitwise representations have been developed to improve their efficiency. A notable optimization is the radix tree, which provides more efficient prefix-based storage.
 
 ## Graph
-A collection of nodes connected by edges.
+A collection of nodes connected by edges. Nodes are often called vertex/vertices.
+A graph is a tree. Or more specifically, all trees are graphs, but not all graphs are trees.
+Can be represented by a matrix (list of lists that hold True/False), or a hashmap where each key hold a set/list with the vertices it has edges with.
