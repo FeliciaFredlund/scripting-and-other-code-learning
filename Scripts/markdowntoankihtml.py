@@ -32,21 +32,24 @@ c. /home
 d. /etc
 '''
 
-test = """
-1. Filsystemslayout: Alla bibliotek i en Linux har sitt bestämda ändamål. Beskriv ändamålet för följande bibliotek. (4p)
-a. /bin
-b. /mnt
-c. /home
-d. /etc
+import sys
+import os
 
-1. Filsystemslayout. Alla bibliotek i en Linux har sitt bestämda ändamål. Beskriv ändamålet för följande bibliotek. (4p)
-a. /bin
-b. /mnt
-c. /home
-d. /etc
-"""
+path = sys.argv[1]
 
-lines = test.splitlines()
+if not os.path.isfile(path):
+    print("That is not a file")
+    exit(1)
+if not path.endswith(".md"):
+    print("Please provide an .md file")
+    exit(1)
+
+new_file = path[:-3] + "_ankiready.txt"
+
+with open(path) as f:
+    content = f.read()
+
+lines = content.splitlines()
 previous_index = -1
 
 for i in range(len(lines)):
@@ -55,7 +58,7 @@ for i in range(len(lines)):
         if previous_index != -1:
             lines[previous_index] += '";'
         continue
-    
+
     if line[0].isdigit():
         line = line[3:]
         
@@ -71,6 +74,11 @@ for i in range(len(lines)):
     else:
         line = "ERROR " + line + " ERROR"
     
+
+
     lines[i] = line
     
     previous_index = i
+
+with open(new_file, "w") as f:
+    f.write("\n".join(lines))
